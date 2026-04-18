@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS Dashboard</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    body.homePage {
+      background:
+        radial-gradient(circle at top left, rgba(14, 116, 144, 0.12), transparent 24%),
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 26%),
+        linear-gradient(180deg, #f8fbfc 0%, #eef4f6 100%);
+    }
+
+    body.homePage::before {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
+    }
+
+    .homePage .hero {
+      padding: 24px;
+      background:
+        linear-gradient(135deg, #102a43, #163f5c 58%, #1b4965);
+    }
+
+    .homePage .heroEyebrow {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .homePage .heroTitle {
+      max-width: 11ch;
+      font-size: clamp(2.1rem, 4.8vw, 3.2rem);
+    }
+
+    .homePage .heroText {
+      max-width: 54ch;
+      color: rgba(241, 245, 249, 0.86);
+    }
+
+    .homePage .heroPanel {
+      grid-template-columns: 1fr;
+    }
+
+    .homePage .heroPanel .miniPanel {
+      padding: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .homePage .flowList {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .homePage .flowItem {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .homePage .flowStep {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #082f49;
+      background: linear-gradient(135deg, #f8fafc, #cfe8ef);
+    }
+
+    .homePage .flowItem strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .homePage .flowItem span {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: rgba(241, 245, 249, 0.74);
+    }
+
+    .homePage .sectionLabel {
+      background: rgba(14, 116, 144, 0.1);
+      color: #0f4c5c;
+    }
+
+    .homePage .sectionIntro p {
+      max-width: 58ch;
+    }
+
+    .homePage .metricCard {
+      color: #102a43;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 244, 247, 0.94));
+      border: 1px solid rgba(171, 193, 209, 0.5);
+      box-shadow: 0 20px 40px rgba(9, 30, 44, 0.18);
+    }
+
+    .homePage .metricCard h3 {
+      color: #486581;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+    }
+
+    .homePage .metricValue {
+      color: #0f172a;
+      font-size: 2rem;
+    }
+
+    .homePage .metricHint {
+      color: #526581;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .homePage .dashboardGrid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .homePage .featureCard {
+      min-height: 210px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84));
+    }
+
+    .homePage .featureCard::before {
+      background: radial-gradient(circle, rgba(14, 116, 144, 0.16), transparent 62%);
+    }
+
+    .homePage .featureCard.warm::before {
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.18), transparent 62%);
+    }
+
+    .homePage .featureCard.alert::before {
+      background: radial-gradient(circle, rgba(220, 38, 38, 0.18), transparent 62%);
+    }
+
+    .homePage .cardIcon {
+      background: linear-gradient(135deg, #0f766e, #38b2ac);
+      box-shadow: 0 16px 34px rgba(15, 118, 110, 0.24);
+    }
+
+    .homePage .warm .cardIcon {
+      background: linear-gradient(135deg, #d97706, #f6ad55);
+      box-shadow: 0 16px 34px rgba(217, 119, 6, 0.24);
+    }
+
+    .homePage .alert .cardIcon {
+      background: linear-gradient(135deg, #dc2626, #fb7185);
+    }
+
+    .homePage .tag {
+      background: rgba(15, 118, 110, 0.1);
+      color: #0f766e;
+    }
+
+    .homePage .warm .tag {
+      background: rgba(217, 119, 6, 0.12);
+      color: #b45309;
+    }
+
+    .homePage .alert .tag {
+      background: rgba(220, 38, 38, 0.1);
+      color: #b91c1c;
+    }
+
+    .homePage .featureFooter span:last-child {
+      color: #0f766e;
+    }
+  </style>
+</head>
+<body class="homePage">
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true">
+          <img src="/static/ams-logo.png" alt="AMS" />
+        </div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span>MS Dashboard</div>
+          <div class="brandSub">Attendance Management System</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <a class="btn" href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="heroEyebrow">Smart Campus Workflow</div>
+          <h1 class="heroTitle">Simple control for attendance and training.</h1>
+          <p class="heroText">
+            Open the right module quickly, manage students with less clutter, and move between recognition, training, and records without distraction.
+          </p>
+          <div class="heroActions">
+            <a class="btn solid" href="/live" target="_blank" rel="noopener noreferrer">Launch Live Camera</a>
+            <a class="btn warm" href="/admin" target="_blank" rel="noopener noreferrer">Open Admin Panel</a>
+          </div>
+          <div class="statsGrid">
+            <article class="metricCard">
+              <h3>Recognition</h3>
+              <div class="metricValue">Live</div>
+              <div class="metricHint">Camera and image-based face matching.</div>
+            </article>
+            <article class="metricCard">
+              <h3>Training</h3>
+              <div class="metricValue">2 Modes</div>
+              <div class="metricHint">Upload photos or capture them live.</div>
+            </article>
+            <article class="metricCard">
+              <h3>Control</h3>
+              <div class="metricValue">Admin</div>
+              <div class="metricHint">Sections, records, and security tools.</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="heroPanel">
+          <div class="miniPanel">
+            <h3>Quick flow</h3>
+            <div class="flowList">
+              <div class="flowItem">
+                <div class="flowStep">1</div>
+                <div>
+                  <strong>Train students</strong>
+                  <span>Add or update face data before running attendance.</span>
+                </div>
+              </div>
+              <div class="flowItem">
+                <div class="flowStep">2</div>
+                <div>
+                  <strong>Run recognition</strong>
+                  <span>Use live camera or upload an image for matching.</span>
+                </div>
+              </div>
+              <div class="flowItem">
+                <div class="flowStep">3</div>
+                <div>
+                  <strong>Review records</strong>
+                  <span>Check attendance history and manage access if needed.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectionBlock">
+      <div class="sectionIntro">
+        <div>
+          <div class="sectionLabel">Workspace</div>
+          <h2>Core modules</h2>
+          <p>Choose a module and go straight to work.</p>
+        </div>
+      </div>
+
+      <section class="dashboardGrid" aria-label="Pages">
+        <a class="card featureCard warm" href="/train" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">TR</div>
+          <div class="tag">Training</div>
+          <h2>Train Students</h2>
+          <p>Add new students or refresh stored face data.</p>
+          <div class="featureFooter">
+            <span>Student setup</span>
+            <span>Open</span>
+          </div>
+        </a>
+
+        <a class="card featureCard" href="/recognize-page" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">RC</div>
+          <div class="tag">Recognition</div>
+          <h2>Recognize Faces</h2>
+          <p>Upload an image and check detected students.</p>
+          <div class="featureFooter">
+            <span>Image scan</span>
+            <span>Open</span>
+          </div>
+        </a>
+
+        <a class="card featureCard" href="/live" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">LV</div>
+          <div class="tag">Live</div>
+          <h2>Live Camera</h2>
+          <p>Start real-time face recognition from the webcam.</p>
+          <div class="featureFooter">
+            <span>Live mode</span>
+            <span>Open</span>
+          </div>
+        </a>
+
+        <a class="card featureCard" href="/attendance" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">AT</div>
+          <div class="tag">Attendance</div>
+          <h2>Attendance List</h2>
+          <p>View daily attendance records and past entries.</p>
+          <div class="featureFooter">
+            <span>Records</span>
+            <span>Open</span>
+          </div>
+        </a>
+
+        <a class="card featureCard warm" href="/admin" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">AD</div>
+          <div class="tag">Admin</div>
+          <h2>Admin Panel</h2>
+          <p>Manage students, users, and section details.</p>
+          <div class="featureFooter">
+            <span>Management</span>
+            <span>Open</span>
+          </div>
+        </a>
+
+        <a class="card featureCard alert" href="/security" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">SC</div>
+          <div class="tag">Security</div>
+          <h2>Security Dashboard</h2>
+          <p>Handle blocking and security-related student actions.</p>
+          <div class="featureFooter">
+            <span>Access control</span>
+            <span>Open</span>
+          </div>
+        </a>
+      </section>
+    </section>
+  </div>
+</body>
+</html>

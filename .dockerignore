@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite
+*.sqlite3
+recognized_*.jpg
+recognized_*.jpeg
+recognized_*.png
+.vscode
+.idea

@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS · Live Training</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f5f7;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow: 0 10px 30px rgba(17,24,39,.10);
+      --orange:#f47a20;
+      --orange2:#ff9c42;
+      --blue:#1976d2;
+      --blue2:#2f8cff;
+      --danger:#dc2626;
+      --good:#16a34a;
+      --warn:#d97706;
+    }
+
+    *{box-sizing:border-box}
+    html, body{height:100%}
+    body{
+      margin:0;
+      font-family: Poppins, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 2px 10px rgba(17,24,39,.08);
+    }
+    .topbarInner{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+    }
+    .brand{display:flex; align-items:center; gap: 12px; min-width: 280px}
+    .brandLogo{
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fbf1f1;
+      display:grid;
+      place-items:center;
+    }
+    .brandLogo img{width:100%; height:100%; object-fit:cover; object-position: 50% 58%; transform: scale(1.12); display:block}
+    .brandText{display:flex; flex-direction:column; line-height:1.05}
+    .brandName{font-weight: 900; letter-spacing: .2px; font-size: 18px}
+    .brandName .u{color: var(--orange)}
+    .brandName .ms{color:#111}
+    .brandSub{font-size: 11px; color: rgba(17,24,39,.70); text-transform: uppercase; letter-spacing: .12em; margin-top: 2px}
+
+    .right{display:flex; align-items:center; gap: 10px}
+    .profileMenu{position: relative}
+    .profileMenu summary{list-style: none; cursor: pointer}
+    .profileMenu summary::-webkit-details-marker{display:none}
+    .profile{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 4px 6px 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(17,24,39,.08);
+    }
+    .profileText{display:flex; flex-direction:column; line-height:1.05; text-align:right}
+    .profileName{font-weight: 800; font-size: 12px; color: #111}
+    .profileRole{font-size: 11px; color: rgba(17,24,39,.55)}
+    .profileAvatar{
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #f3f4f6;
+    }
+    .profileChevron{
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid rgba(17,24,39,.55);
+      margin-left: 2px;
+    }
+    .profileDropdown{
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 180px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(17,24,39,.16);
+      padding: 6px;
+      display: grid;
+      gap: 4px;
+      z-index: 20;
+    }
+    .profileDropdown a{
+      text-decoration: none;
+      color: #111;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .profileDropdown a:hover{background: rgba(25,118,210,.08)}
+    a.btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.12);
+      background: #fff;
+      color: rgba(17,24,39,.92);
+      text-decoration:none;
+      font-weight: 800;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(17,24,39,.10);
+      white-space:nowrap;
+    }
+    a.btn:hover{border-color: rgba(244,122,32,.45)}
+    a.btn.primary{border-color: rgba(25,118,210,.35)}
+
+    .page{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 22px 20px 46px;
+    }
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap: 16px}
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      .brand{min-width: unset}
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* Desktop behavior: keep Tips visible; scroll Live Training card */
+    @media (min-width: 981px){
+      .grid{align-items:start}
+      .stickyAside{position: sticky; top: 92px}
+      .scrollCard{max-height: calc(100vh - 130px); overflow:auto}
+    }
+    .cardHd{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      background: linear-gradient(180deg, rgba(25,118,210,.06), rgba(25,118,210,.02));
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .cardHd.orange{background: linear-gradient(180deg, rgba(244,122,32,.10), rgba(244,122,32,.03))}
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing:.2px;
+      color:#fff;
+      white-space:nowrap;
+    }
+    .tag.blue{background: linear-gradient(180deg, var(--blue2), var(--blue))}
+    .tag.orange{background: linear-gradient(180deg, var(--orange2), var(--orange))}
+    .title{font-weight: 800; font-size: 16px; letter-spacing:.2px; margin-top: 10px}
+    .sub{color: var(--muted); font-size: 12px; margin-top: 4px}
+    .pill{
+      display:inline-flex;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.10);
+      color: rgba(17,24,39,.72);
+      font-size:12px;
+      background: rgba(25,118,210,.06);
+      white-space:nowrap;
+      font-weight: 800;
+    }
+    .content{padding: 14px 16px 16px}
+
+    label{display:block; margin: 10px 0 6px; font-weight: 700; font-size: 12px; color: rgba(17,24,39,.72)}
+    input[type="text"], input[type="number"]{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(17,24,39,.14);
+      background: #fff;
+      color: rgba(17,24,39,.92);
+      outline:none;
+    }
+
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap: 10px}
+    @media (max-width: 980px){.row{grid-template-columns: 1fr}}
+
+    button{
+      cursor:pointer;
+      border: 1px solid rgba(0,0,0,.12);
+      background: #fff;
+      color: rgba(17,24,39,.92);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 12px;
+      box-shadow: 0 10px 20px rgba(17,24,39,.10);
+    }
+    button:hover{border-color: rgba(244,122,32,.45)}
+    button:disabled{opacity:.6; cursor:not-allowed}
+
+    .btnRow{display:flex; gap: 10px; flex-wrap:wrap; margin-top: 12px}
+    .btnRow button{flex: 1 1 180px}
+    .btnBlue{border-color: rgba(25,118,210,.28); background: rgba(25,118,210,.06)}
+    .btnOrange{border-color: rgba(244,122,32,.30); background: rgba(244,122,32,.08)}
+    .btnDanger{border-color: rgba(220,38,38,.28); background: rgba(220,38,38,.06)}
+
+    .status{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(25,118,210,.05);
+      color: rgba(17,24,39,.82);
+      font-size: 12px;
+      min-height: 42px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .dot{width:10px; height:10px; border-radius: 999px; background: rgba(17,24,39,.18)}
+    .dot.good{background: rgba(22,163,74,.85)}
+    .dot.bad{background: rgba(220,38,38,.85)}
+    .dot.warn{background: rgba(217,119,6,.90)}
+
+    pre{
+      margin: 12px 0 0;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(17,24,39,.04);
+      color: rgba(17,24,39,.92);
+      font-size: 12px;
+      overflow:auto;
+      max-height: 280px;
+      display:none;
+    }
+
+    .camera{
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #0b1220;
+      aspect-ratio: 16/9;
+      overflow:hidden;
+      box-shadow: 0 12px 30px rgba(17,24,39,.12);
+    }
+    video{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    .thumbs{margin-top: 12px; display:grid; grid-template-columns: repeat(5, 1fr); gap: 8px}
+    @media (max-width: 600px){.thumbs{grid-template-columns: repeat(3, 1fr)}}
+    .thumb{
+      position: relative;
+      border-radius: 14px;
+      overflow:hidden;
+      border: 1px solid rgba(0,0,0,.10);
+      background: rgba(17,24,39,.04);
+      aspect-ratio: 1 / 1;
+      display:grid;
+      place-items:center;
+    }
+    .thumb img{width:100%; height:100%; object-fit:cover; display:block}
+    .thumbEmpty{color: rgba(107,114,128,.8); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing:.08em}
+
+    .thumbDel{
+      position:absolute;
+      top: 6px;
+      right: 6px;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.18);
+      background: rgba(255,255,255,.92);
+      color: rgba(17,24,39,.92);
+      display:grid;
+      place-items:center;
+      font-weight: 900;
+      font-size: 14px;
+      box-shadow: 0 10px 20px rgba(17,24,39,.16);
+      cursor: pointer;
+    }
+    .thumbDel:hover{border-color: rgba(220,38,38,.35)}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true"><img src="/static/ams-logo.png" alt="AMS" /></div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span><span class="ms">MS</span></div>
+          <div class="brandSub">ATTENDANCE MANAGEMENT SYSTEM</div>
+        </div>
+      </div>
+      <div class="right">
+        {% if user_role in ['trainer', 'faculty'] %}
+        <details class="profileMenu">
+          <summary class="profile">
+            <div class="profileText">
+              <div class="profileName">{{ user_name }}</div>
+              <div class="profileRole">{{ user_role|title }}</div>
+            </div>
+            <img class="profileAvatar" src="{{ user_photo }}" alt="Profile photo" />
+            <span class="profileChevron" aria-hidden="true"></span>
+          </summary>
+          <div class="profileDropdown" role="menu">
+            <a href="/change-password?role={{ user_role }}&profile={{ profile }}" role="menuitem">Change Password</a>
+            <a href="/logout?role={{ user_role }}&profile={{ profile }}" role="menuitem">Logout</a>
+          </div>
+        </details>
+        {% else %}
+        <a class="btn" href="/logout?role=admin">Logout</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="grid">
+      <section class="card scrollCard">
+        <div class="cardHd">
+          <div>
+            <div class="tag blue">Live Training</div>
+            <div class="title">Train / Update Student (Camera)</div>
+            <div class="sub">Capture <strong>at least 3</strong> and <strong>max 5</strong> photos, then train.</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+            <div class="pill" id="captureCount">Images: 0/5</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <form id="liveTrainForm">
+            <div class="row">
+              <div>
+                <label>Regn No</label>
+                <input id="personId" type="number" name="person_id" inputmode="numeric" min="1" required>
+              </div>
+              <div>
+                <label>Roll No</label>
+                <input id="rollNo" type="text" name="roll_no" required>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <label>Name</label>
+              <input id="personName" type="text" name="name" required>
+            </div>
+
+            <div style="margin-top:14px" class="camera">
+              <video id="video" playsinline autoplay muted></video>
+            </div>
+
+            <div class="btnRow">
+              <button id="startBtn" type="button" class="btnBlue">Start Camera</button>
+              <button id="stopBtn" type="button" class="btnDanger" disabled>Stop Camera</button>
+              <button id="captureBtn" type="button" class="btnOrange" disabled>Capture Photo</button>
+              <button id="clearBtn" type="button" class="btnDanger" disabled>Clear Photos</button>
+            </div>
+
+            <div class="thumbs" id="thumbs">
+              <div class="thumb"><div class="thumbEmpty">Empty</div></div>
+              <div class="thumb"><div class="thumbEmpty">Empty</div></div>
+              <div class="thumb"><div class="thumbEmpty">Empty</div></div>
+              <div class="thumb"><div class="thumbEmpty">Empty</div></div>
+              <div class="thumb"><div class="thumbEmpty">Empty</div></div>
+            </div>
+
+            <div class="btnRow" style="margin-top: 14px">
+              <button id="trainBtn" type="submit" class="btnBlue" disabled>Train With Captures</button>
+            </div>
+
+            <div class="status" id="statusBox">
+              <span class="dot" id="statusDot"></span>
+              <span id="statusText">Ready. Start camera to begin.</span>
+            </div>
+
+            <pre id="result"></pre>
+          </form>
+        </div>
+      </section>
+
+      <aside class="card stickyAside">
+        <div class="cardHd orange">
+          <div>
+            <div class="tag orange">Tips</div>
+            <div class="title">Capture Checklist</div>
+            <div class="sub">Better captures = better recognition.</div>
+          </div>
+        </div>
+        <div class="content" style="color: rgba(31,41,55,.80); font-size:13px; line-height:1.6">
+          <div style="margin-bottom:10px"><strong style="color: rgba(17,24,39,.95)">Capture 3–5 images</strong> with slight head turns.</div>
+          <div style="margin-bottom:10px">Avoid motion blur; keep face centered.</div>
+          <div style="margin-bottom:10px">Try consistent lighting, no harsh backlight.</div>
+          <div>After training, test in Recognition or Live Camera.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('liveTrainForm');
+    const video = document.getElementById('video');
+    const thumbs = document.getElementById('thumbs');
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const trainBtn = document.getElementById('trainBtn');
+
+    const captureCount = document.getElementById('captureCount');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const resultPre = document.getElementById('result');
+    const profile = "{{ profile }}";
+
+    const captured = []; // { blob, url }
+    let stream = null;
+
+    function setStatus(kind, text) {
+      statusDot.className = 'dot' + (kind ? (' ' + kind) : '');
+      statusText.textContent = text;
+    }
+
+    function updateUi() {
+      const count = captured.length;
+      captureCount.textContent = `Images: ${count}/5`;
+      clearBtn.disabled = count === 0;
+      trainBtn.disabled = count < 3 || count > 5;
+
+      stopBtn.disabled = !stream;
+
+      // Capture enabled if camera is running and not at max.
+      captureBtn.disabled = !stream || count >= 5;
+
+      // Render exactly 5 slots.
+      thumbs.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'thumb';
+        if (captured[i]) {
+          const img = document.createElement('img');
+          img.src = captured[i].url;
+          img.alt = `Capture ${i + 1}`;
+          slot.appendChild(img);
+
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'thumbDel';
+          del.title = 'Delete photo';
+          del.textContent = '×';
+          del.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            deleteCapture(i);
+          });
+          slot.appendChild(del);
+        } else {
+          const empty = document.createElement('div');
+          empty.className = 'thumbEmpty';
+          empty.textContent = 'Empty';
+          slot.appendChild(empty);
+        }
+        thumbs.appendChild(slot);
+      }
+
+      if (count === 0) setStatus('', 'Ready. Capture 3–5 photos.');
+      else if (count < 3) setStatus('warn', `Captured ${count}/5. Need at least 3 photos to train.`);
+      else setStatus('', `Captured ${count}/5. Ready to train.`);
+    }
+
+    async function startCamera() {
+      try {
+        // Stop any old stream
+        if (stream) {
+          stream.getTracks().forEach(t => t.stop());
+          stream = null;
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+        video.srcObject = stream;
+        await video.play();
+        setStatus('good', 'Camera started. Capture 3–5 photos.');
+      } catch (err) {
+        setStatus('bad', 'Camera error: ' + (err && err.message ? err.message : String(err)));
+      } finally {
+        updateUi();
+      }
+    }
+
+    function stopCamera() {
+      try {
+        if (stream) {
+          stream.getTracks().forEach(t => t.stop());
+        }
+      } catch (_) {
+        // ignore
+      }
+      stream = null;
+      try { video.srcObject = null; } catch (_) {}
+      setStatus('warn', 'Camera stopped.');
+      updateUi();
+    }
+
+    function deleteCapture(index) {
+      const item = captured[index];
+      if (!item) return;
+      try { URL.revokeObjectURL(item.url); } catch (_) {}
+      captured.splice(index, 1);
+      updateUi();
+    }
+
+    function capturePhoto() {
+      if (!stream) {
+        setStatus('warn', 'Start the camera first.');
+        return;
+      }
+      if (captured.length >= 5) {
+        setStatus('warn', 'Maximum 5 photos reached.');
+        updateUi();
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const w = video.videoWidth || 1280;
+      const h = video.videoHeight || 720;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, w, h);
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          setStatus('bad', 'Failed to capture image.');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        captured.push({ blob, url });
+        updateUi();
+      }, 'image/jpeg', 0.92);
+    }
+
+    function clearPhotos() {
+      for (const item of captured) {
+        try { URL.revokeObjectURL(item.url); } catch (_) {}
+      }
+      captured.length = 0;
+      updateUi();
+    }
+
+    startBtn.addEventListener('click', startCamera);
+    stopBtn.addEventListener('click', stopCamera);
+    captureBtn.addEventListener('click', capturePhoto);
+    clearBtn.addEventListener('click', clearPhotos);
+
+    window.addEventListener('beforeunload', () => {
+      try { stopCamera(); } catch (_) {}
+      try { clearPhotos(); } catch (_) {}
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const count = captured.length;
+      if (count < 3) {
+        setStatus('warn', 'Please capture at least 3 photos.');
+        return;
+      }
+      if (count > 5) {
+        setStatus('warn', 'Please keep max 5 photos.');
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append('person_id', document.getElementById('personId').value);
+      fd.append('roll_no', document.getElementById('rollNo').value);
+      fd.append('name', document.getElementById('personName').value);
+
+      const personId = document.getElementById('personId').value || 'student';
+      for (let i = 0; i < captured.length; i++) {
+        fd.append('files', captured[i].blob, `${personId}_${i + 1}.jpg`);
+      }
+
+      resultPre.style.display = 'none';
+      resultPre.textContent = '';
+      trainBtn.disabled = true;
+      setStatus('', 'Training in progress...');
+
+      try {
+        const url = profile ? `/train/?profile=${encodeURIComponent(profile)}` : '/train/';
+        const response = await fetch(url, { method: 'POST', body: fd });
+        const result = await response.json();
+
+        resultPre.style.display = 'block';
+        resultPre.textContent = JSON.stringify(result, null, 2);
+
+        if (response.ok && result && result.message) {
+          setStatus('good', result.message);
+        } else if (result && result.error) {
+          setStatus('bad', result.error);
+        } else {
+          setStatus('warn', 'Training finished with an unexpected response.');
+        }
+      } catch (err) {
+        setStatus('bad', 'Error: ' + err.message);
+      } finally {
+        updateUi();
+      }
+    });
+
+    // Initial paint
+    updateUi();
+  </script>
+
+  <script>
+    const role = "{{ user_role }}";
+    const profile = "{{ profile }}";
+    if (role === 'faculty' || role === 'trainer') {
+      setInterval(async () => {
+        try {
+          const res = await fetch(`/auth/ping?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`, { cache: 'no-store' });
+          const data = await res.json();
+          if (!data.ok) {
+            window.location.href = `/logout?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`;
+          }
+        } catch (_) {
+          // ignore
+        }
+      }, 8000);
+    }
+  </script>
+</body>
+</html>

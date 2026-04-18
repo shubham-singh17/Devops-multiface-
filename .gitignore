@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+
+# Python virtual environments
+.venv/
+.venv*/
+venv/
+ENV/
+
+# Environment variables
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Runtime artifacts
+embeddings.db
+*.sqlite
+*.sqlite3
+*.db
+recognized_*.jpg
+recognized_*.jpeg
+recognized_*.png
+
+# Logs
+*.log

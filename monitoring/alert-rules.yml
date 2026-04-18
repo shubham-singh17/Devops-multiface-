@@ -1,0 +1,11 @@
+groups:
+  - name: ams_alerts
+    rules:
+      - alert: AppHighCpuUsage
+        expr: 100 * sum(rate(container_cpu_usage_seconds_total{id="/"}[10s])) > 1
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "AMS app CPU usage is above 1%"
+          description: "AMS app CPU has been above 1% for 10 seconds. Current value: {{ $value }}%"

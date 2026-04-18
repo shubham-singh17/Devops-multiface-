@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS · Faculty · Section</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f5f7;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --border:#e5e7eb;
+      --shadow: 0 10px 30px rgba(17,24,39,.10);
+      --orange:#f47a20;
+      --orange2:#ff9c42;
+      --blue:#1976d2;
+      --blue2:#2f8cff;
+    }
+
+    *{box-sizing:border-box}
+    html, body{height:100%}
+    body{
+      margin:0;
+      font-family: Poppins, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #ffffff;
+      border-bottom: 1px solid rgba(0,0,0,.08);
+      box-shadow: 0 2px 10px rgba(17,24,39,.08);
+    }
+    .topbarInner{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+    }
+    .brand{display:flex; align-items:center; gap: 12px; min-width: 260px}
+    .brandLogo{
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #fbf1f1;
+      display:grid;
+      place-items:center;
+    }
+    .brandLogo img{width:100%; height:100%; object-fit:cover; object-position: 50% 58%; transform: scale(1.12); display:block}
+    .brandText{display:flex; flex-direction:column; line-height:1.05}
+    .brandName{font-weight: 900; letter-spacing: .2px; font-size: 18px}
+    .brandName .u{color: var(--orange)}
+    .brandName .ms{color:#111}
+    .brandSub{font-size: 11px; color: rgba(17,24,39,.70); text-transform: uppercase; letter-spacing: .12em; margin-top: 2px}
+
+    .right{display:flex; align-items:center; gap: 10px}
+    .profileMenu{position: relative}
+    .profileMenu summary{list-style: none; cursor: pointer}
+    .profileMenu summary::-webkit-details-marker{display:none}
+    .profile{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 4px 6px 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(17,24,39,.08);
+    }
+    .profileText{display:flex; flex-direction:column; line-height:1.05; text-align:right}
+    .profileName{font-weight: 800; font-size: 12px; color: #111}
+    .profileRole{font-size: 11px; color: rgba(17,24,39,.55)}
+    .profileAvatar{
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid rgba(0,0,0,.10);
+      background: #f3f4f6;
+    }
+    .profileChevron{
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid rgba(17,24,39,.55);
+      margin-left: 2px;
+    }
+    .profileDropdown{
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 180px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(17,24,39,.16);
+      padding: 6px;
+      display: grid;
+      gap: 4px;
+      z-index: 20;
+    }
+    .profileDropdown a{
+      text-decoration: none;
+      color: #111;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .profileDropdown a:hover{background: rgba(25,118,210,.08)}
+    a.btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.12);
+      background: #fff;
+      color: rgba(17,24,39,.92);
+      text-decoration:none;
+      font-weight: 800;
+      font-size: 12px;
+      box-shadow: 0 6px 18px rgba(17,24,39,.10);
+      white-space:nowrap;
+    }
+    a.btn:hover{border-color: rgba(244,122,32,.45)}
+
+    .page{max-width: 1200px; margin: 0 auto; padding: 22px 20px 44px}
+    .pageHead{margin-bottom: 14px}
+    .pageHead h1{margin:0; font-size: 22px; letter-spacing:.2px}
+    .pageHead p{margin:6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5}
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, 380.66px);
+      justify-content: left;
+      gap: 18px;
+    }
+    a.card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      text-decoration:none;
+      color: var(--text);
+      width: 380.66px;
+      padding: 18px 18px 16px;
+      position: relative;
+      overflow:hidden;
+      height: 180px;
+      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+      display:block;
+    }
+    a.card:hover{
+      box-shadow: var(--shadow), inset 0 0 0 1px var(--orange);
+      border-color: transparent;
+    }
+    a.card:before{
+      content:"";
+      position:absolute;
+      inset: -60px -60px auto auto;
+      width: 160px;
+      height: 160px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(25,118,210,.18), transparent 62%);
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing:.2px;
+      color:#fff;
+      position: relative;
+      z-index: 1;
+    }
+    .tag.blue{background: linear-gradient(180deg, var(--blue2), var(--blue))}
+    a.card h2{margin:12px 0 8px; font-size: 18px; letter-spacing:.2px; position: relative; z-index: 1}
+    a.card p{margin:0; color: rgba(31,41,55,.75); font-size: 13px; line-height: 1.5; position: relative; z-index: 1}
+
+    @media (max-width: 980px){
+      .brand{min-width: unset}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true"><img src="/static/ams-logo.png" alt="AMS" /></div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span><span class="ms">MS</span></div>
+          <div class="brandSub">ATTENDANCE MANAGEMENT SYSTEM</div>
+        </div>
+      </div>
+      <div class="right">
+        <a class="btn" href="/faculty?profile={{ profile }}">Sections</a>
+        <details class="profileMenu">
+          <summary class="profile">
+            <div class="profileText">
+              <div class="profileName">{{ user_name }}</div>
+              <div class="profileRole">{{ user_role|title }}</div>
+            </div>
+            <img class="profileAvatar" src="{{ user_photo }}" alt="Profile photo" />
+            <span class="profileChevron" aria-hidden="true"></span>
+          </summary>
+          <div class="profileDropdown" role="menu">
+            <a href="/change-password?role=faculty&profile={{ profile }}" role="menuitem">Change Password</a>
+            <a href="/logout?role=faculty&profile={{ profile }}" role="menuitem">Logout</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="pageHead">
+      <h1>{{ section.course_code }} · {{ section.course_name }}</h1>
+      <p>Select what you want to do for this section.</p>
+    </div>
+
+    <section class="grid" aria-label="Section tools">
+      <a class="card" href="/live?section_id={{ section.id }}&profile={{ profile }}" target="_blank" rel="noopener noreferrer">
+        <div class="tag blue">Live</div>
+        <h2>Live Camera</h2>
+        <p>Use webcam to mark attendance for this section only.</p>
+      </a>
+
+      <a class="card" href="/attendance?section_id={{ section.id }}&profile={{ profile }}" target="_blank" rel="noopener noreferrer">
+        <div class="tag blue">Attendance</div>
+        <h2>Attendance List</h2>
+        <p>View attendance for this section.</p>
+      </a>
+    </section>
+  </div>
+
+  <script>
+    const role = "{{ user_role }}";
+    const profile = "{{ profile }}";
+    if (role === 'faculty' || role === 'trainer') {
+      setInterval(async () => {
+        try {
+          const res = await fetch(`/auth/ping?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`, { cache: 'no-store' });
+          const data = await res.json();
+          if (!data.ok) {
+            window.location.href = `/logout?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`;
+          }
+        } catch (_) {
+          // ignore
+        }
+      }, 8000);
+    }
+  </script>
+</body>
+</html>

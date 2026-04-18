@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS Trainer</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true"><img src="/static/ams-logo.png" alt="AMS" /></div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span>MS Trainer</div>
+          <div class="brandSub">Attendance Management System</div>
+        </div>
+      </div>
+      <div class="right">
+        <details class="profileMenu">
+          <summary class="profile">
+            <div class="profileText">
+              <div class="profileName">{{ user_name }}</div>
+              <div class="profileRole">{{ user_role|title }}</div>
+            </div>
+            <img class="profileAvatar" src="{{ user_photo }}" alt="Profile photo" />
+            <span class="profileChevron" aria-hidden="true"></span>
+          </summary>
+          <div class="profileDropdown" role="menu">
+            <a href="/change-password?role=trainer&profile={{ profile }}" role="menuitem">Change Password</a>
+            <a href="/logout?role=trainer&profile={{ profile }}" role="menuitem">Logout</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="heroEyebrow">Training Workspace</div>
+          <h1 class="heroTitle">A cleaner training dashboard for building and updating student face data.</h1>
+          <p class="heroText">Move between upload-based training and live camera capture with stronger visual priority, better contrast, and clearer task separation.</p>
+          <div class="heroActions">
+            <a class="btn warm" href="/train?profile={{ profile }}" target="_blank" rel="noopener noreferrer">Open Upload Training</a>
+            <a class="btn solid" href="/train-live?profile={{ profile }}" target="_blank" rel="noopener noreferrer">Open Live Training</a>
+          </div>
+          <div class="statsGrid">
+            <article class="metricCard">
+              <h3>Training Modes</h3>
+              <div class="metricValue">2</div>
+              <div class="metricHint">Upload-based and live camera capture.</div>
+            </article>
+            <article class="metricCard">
+              <h3>Role</h3>
+              <div class="metricValue">Trainer</div>
+              <div class="metricHint">Focused access for onboarding and embedding updates.</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="heroPanel">
+          <div class="miniPanel">
+            <h3>Why this feels better</h3>
+            <p>The page now reads more like a modern operations console instead of a plain list, helping users distinguish the right training path faster.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectionBlock">
+      <div class="sectionIntro">
+        <div>
+          <div class="sectionLabel">Training Tools</div>
+          <h2>Choose a training mode</h2>
+          <p>Use the method that best fits your onboarding flow, whether you already have student images or want to capture them live.</p>
+        </div>
+      </div>
+
+      <section class="dashboardGrid" aria-label="Pages">
+        <a class="card featureCard warm" href="/train?profile={{ profile }}" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">UP</div>
+          <div class="tag">Upload Training</div>
+          <h2>Train Students</h2>
+          <p>Register students and upload multiple images to generate or refresh embeddings in one structured form flow.</p>
+          <div class="featureFooter">
+            <span>Batch-friendly</span>
+            <span>Open</span>
+          </div>
+        </a>
+
+        <a class="card featureCard" href="/train-live?profile={{ profile }}" target="_blank" rel="noopener noreferrer">
+          <div class="cardIcon">LC</div>
+          <div class="tag">Live Camera</div>
+          <h2>Live Camera Training</h2>
+          <p>Capture several student photos directly from webcam and create embeddings without leaving the browser workflow.</p>
+          <div class="featureFooter">
+            <span>Capture flow</span>
+            <span>Open</span>
+          </div>
+        </a>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const role = "{{ user_role }}";
+    const profile = "{{ profile }}";
+    if (role === 'faculty' || role === 'trainer') {
+      setInterval(async () => {
+        try {
+          const res = await fetch(`/auth/ping?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`, { cache: 'no-store' });
+          const data = await res.json();
+          if (!data.ok) {
+            window.location.href = `/logout?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`;
+          }
+        } catch (_) {
+          // ignore
+        }
+      }, 8000);
+    }
+  </script>
+</body>
+</html>

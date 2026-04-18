@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS Attendance</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    body.attendancePage {
+      background:
+        radial-gradient(circle at top left, rgba(14, 116, 144, 0.1), transparent 24%),
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 26%),
+        linear-gradient(180deg, #f8fbfc 0%, #edf4f7 100%);
+    }
+
+    body.attendancePage::before {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.42) 1px, transparent 1px);
+    }
+
+    .attendancePage .hero {
+      background: linear-gradient(135deg, #12324a, #184e63 58%, #1f6b7a);
+    }
+
+    .attendancePage .heroText {
+      color: rgba(241, 245, 249, 0.88);
+    }
+
+    .attendancePage .hero .pill {
+      background: rgba(255, 255, 255, 0.16);
+      color: #f8fafc;
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .attendancePage .hero .pill select {
+      color: #f8fafc;
+    }
+
+    .attendancePage .hero .pill select option {
+      color: #0f172a;
+    }
+
+    .attendancePage .metricCard {
+      color: #102a43;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 244, 247, 0.95));
+      border: 1px solid rgba(171, 193, 209, 0.5);
+      box-shadow: 0 20px 40px rgba(9, 30, 44, 0.18);
+    }
+
+    .attendancePage .metricCard h3 {
+      color: #486581;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+    }
+
+    .attendancePage .metricValue {
+      color: #0f172a;
+      font-size: 1.9rem;
+    }
+
+    .attendancePage .metricHint {
+      color: #526581;
+      line-height: 1.55;
+    }
+
+    .attendancePage .heroPanel .miniPanel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+  </style>
+</head>
+<body class="attendancePage">
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true"><img src="/static/ams-logo.png" alt="AMS" /></div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span>MS Attendance</div>
+          <div class="brandSub">Attendance Management System</div>
+        </div>
+      </div>
+      <div class="right">
+        {% if user_role in ['faculty', 'trainer'] %}
+          <details class="profileMenu">
+            <summary class="profile">
+              <div class="profileText">
+                <div class="profileName">{{ user_name }}</div>
+                <div class="profileRole">{{ user_role|title }}</div>
+              </div>
+              <img class="profileAvatar" src="{{ user_photo }}" alt="Profile photo" />
+              <span class="profileChevron" aria-hidden="true"></span>
+            </summary>
+            <div class="profileDropdown" role="menu">
+              <a href="/change-password?role={{ user_role }}&profile={{ profile }}" role="menuitem">Change Password</a>
+              <a href="/logout?role={{ user_role }}&profile={{ profile }}" role="menuitem">Logout</a>
+            </div>
+          </details>
+        {% else %}
+          <a class="btn" href="/logout?role=admin">Logout</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="heroEyebrow">Attendance Overview</div>
+          {% if section_id %}
+            <h1 class="heroTitle">Section {{ section_id }} attendance, cleaned up for faster review.</h1>
+          {% else %}
+            <h1 class="heroTitle">Attendance tracking with clearer status visibility and cleaner controls.</h1>
+          {% endif %}
+          <p class="heroText">Review present, absent, and blocked students with a stronger visual hierarchy and quicker manual mark and unmark actions.</p>
+          <div class="heroActions">
+            <div class="pill">Day: <span id="dayPill">{{ day }}</span></div>
+            <div class="pill">Marked: <span id="markedCount">{{ count }}</span></div>
+            <label class="pill" style="cursor:pointer;">
+              Filter
+              <select id="statusFilter" aria-label="Filter attendance" style="min-height: 34px; width: auto; padding: 4px 28px 4px 10px; border: 0; background: transparent; box-shadow: none;">
+                <option value="all">All</option>
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+              </select>
+            </label>
+          </div>
+          <div class="statsGrid">
+            <article class="metricCard">
+              <h3>Current Day</h3>
+              <div class="metricValue" id="dayText">{{ day }}</div>
+              <div class="metricHint">Attendance is grouped by the selected day.</div>
+            </article>
+            <article class="metricCard">
+              <h3>Visible Rows</h3>
+              <div class="metricValue" id="shownCount">{{ rows|length }}</div>
+              <div class="metricHint">Changes when you filter present and absent students.</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="heroPanel">
+          <div class="miniPanel">
+            <h3>Status guide</h3>
+            <p>Present rows show confirmed marks, absent rows can be manually marked, and blocked rows remain protected from attendance changes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <main>
+    <section class="card">
+      <div class="hd">
+        <div>
+          <div class="sectionLabel" style="background: rgba(36, 89, 246, 0.08); color: var(--blue);">Today's List</div>
+          <div class="title">Attendance records</div>
+          <div class="meta">Latest marks appear first. You can still update records manually below.</div>
+        </div>
+      </div>
+
+      {% if rows and rows|length > 0 %}
+        <div class="content">
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:110px;">Roll No</th>
+                  <th style="width:110px;">Regn No</th>
+                  <th>Name</th>
+                  <th style="width:170px;">Marked At</th>
+                  <th style="width:120px;">Status</th>
+                  <th>Blocked Reason</th>
+                  <th style="width:140px;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="attTbody">
+                {% for r in rows %}
+                  <tr>
+                    <td>{{ r.roll_no or '-' }}</td>
+                    <td>{{ r.person_id }}</td>
+                    <td class="name">{{ r.name }}</td>
+                    <td>{% if r.present %}{{ r.marked_time_ist or '-----' }}{% else %}-----{% endif %}</td>
+                    <td>
+                      {% if r.blocked %}
+                        <span class="badge blocked">Blocked</span>
+                      {% elif r.present %}
+                        <span class="badge good">Present</span>
+                      {% else %}
+                        <span class="badge warn">Absent</span>
+                      {% endif %}
+                    </td>
+                    <td class="muted">{{ r.block_reason or '-' }}</td>
+                    <td>
+                      {% if r.blocked %}
+                        <button type="button" disabled>Blocked</button>
+                      {% else %}
+                        <form method="post" action="/attendance/set-status?profile={{ profile }}" style="margin:0;">
+                          {% if r.attendance_id %}
+                            <input type="hidden" name="attendance_id" value="{{ r.attendance_id }}" />
+                          {% endif %}
+                          <input type="hidden" name="person_id" value="{{ r.person_id }}" />
+                          <input type="hidden" name="day" value="{{ day }}" />
+                          <input type="hidden" name="section_id" value="{{ section_id or '' }}" />
+                          {% if r.present %}
+                            <input type="hidden" name="status" value="unmarked" />
+                            <button class="danger" type="submit">Unmark</button>
+                          {% else %}
+                            <input type="hidden" name="status" value="marked" />
+                            <button class="primary" type="submit">Mark</button>
+                          {% endif %}
+                        </form>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty">
+          No students marked yet. Start Live Camera to mark attendance.
+        </div>
+      {% endif %}
+    </section>
+  </main>
+
+  <script>
+    const attTbody = document.getElementById('attTbody');
+    const markedCount = document.getElementById('markedCount');
+    const dayText = document.getElementById('dayText');
+    const dayPill = document.getElementById('dayPill');
+    const statusFilter = document.getElementById('statusFilter');
+    const shownCount = document.getElementById('shownCount');
+
+    function getFilter() {
+      const stored = localStorage.getItem('attendance_status_filter') || 'all';
+      if (stored === 'present' || stored === 'absent' || stored === 'all') return stored;
+      return 'all';
+    }
+
+    function setFilter(value) {
+      localStorage.setItem('attendance_status_filter', value);
+      if (statusFilter) statusFilter.value = value;
+    }
+
+    function esc(s) {
+      return String(s ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+    }
+
+    function renderRows(rows, day, count) {
+      if (dayText) dayText.textContent = day;
+      if (dayPill) dayPill.textContent = day;
+      if (markedCount) markedCount.textContent = String(count ?? 0);
+
+      if (!attTbody) return;
+      attTbody.innerHTML = '';
+
+      const rawList = Array.isArray(rows) ? rows : [];
+      const mode = getFilter();
+      const list = rawList.filter(r => {
+        const present = !!r.present;
+        if (mode === 'present') return present;
+        if (mode === 'absent') return !present;
+        return true;
+      });
+
+      if (shownCount) shownCount.textContent = String(list.length);
+
+      if (list.length === 0) {
+        attTbody.innerHTML = `<tr><td colspan="7" class="empty">No students in this filter.</td></tr>`;
+        return;
+      }
+
+      for (const r of list) {
+        const tr = document.createElement('tr');
+        const present = !!r.present;
+        const blocked = !!r.blocked;
+        const timeCell = present ? (r.marked_time_ist || '-----') : '-----';
+        const badge = blocked
+          ? '<span class="badge blocked">Blocked</span>'
+          : (present
+            ? '<span class="badge good">Present</span>'
+            : '<span class="badge warn">Absent</span>');
+
+        const hiddenAttendance = r.attendance_id ? `<input type="hidden" name="attendance_id" value="${esc(r.attendance_id)}" />` : '';
+        const action = blocked
+          ? '<button type="button" disabled>Blocked</button>'
+          : (present
+            ? `<input type="hidden" name="status" value="unmarked" /><button class="danger" type="submit">Unmark</button>`
+            : `<input type="hidden" name="status" value="marked" /><button class="primary" type="submit">Mark</button>`);
+
+        tr.innerHTML = `
+          <td>${esc(r.roll_no || '-')}</td>
+          <td>${esc(r.person_id)}</td>
+          <td class="name">${esc(r.name)}</td>
+          <td>${esc(timeCell)}</td>
+          <td>${badge}</td>
+          <td class="muted">${esc(r.block_reason || '-')}</td>
+          <td>
+            <form method="post" action="/attendance/set-status?profile=${encodeURIComponent(profile)}" style="margin:0">
+              ${hiddenAttendance}
+              <input type="hidden" name="person_id" value="${esc(r.person_id)}" />
+              <input type="hidden" name="day" value="${esc(day)}" />
+              <input type="hidden" name="section_id" value="${esc(sectionId)}" />
+              ${action}
+            </form>
+          </td>
+        `;
+        attTbody.appendChild(tr);
+      }
+    }
+
+    function getSelectedDay() {
+      const url = new URL(window.location.href);
+      return url.searchParams.get('day') || '';
+    }
+
+    const profile = "{{ profile }}";
+    const sectionId = "{{ section_id or '' }}";
+
+    async function poll() {
+      try {
+        const day = getSelectedDay();
+        const base = '/attendance/api';
+        const qs = [];
+        if (day) qs.push(`day=${encodeURIComponent(day)}`);
+        if (profile) qs.push(`profile=${encodeURIComponent(profile)}`);
+        if (sectionId) qs.push(`section_id=${encodeURIComponent(sectionId)}`);
+        const url = qs.length ? `${base}?${qs.join('&')}` : base;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        renderRows(data.rows, data.day, data.count);
+      } catch (e) {
+        // ignore offline errors
+      }
+    }
+
+    poll();
+    setInterval(poll, 3000);
+
+    if (statusFilter) {
+      statusFilter.value = getFilter();
+      statusFilter.addEventListener('change', () => {
+        setFilter(statusFilter.value);
+        poll();
+      });
+    }
+  </script>
+
+  <script>
+    const role = "{{ user_role }}";
+    if (role === 'faculty' || role === 'trainer') {
+      setInterval(async () => {
+        try {
+          const res = await fetch(`/auth/ping?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`, { cache: 'no-store' });
+          const data = await res.json();
+          if (!data.ok) {
+            window.location.href = `/logout?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`;
+          }
+        } catch (_) {
+          // ignore
+        }
+      }, 8000);
+    }
+  </script>
+</body>
+</html>

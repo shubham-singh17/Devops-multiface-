@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS Faculty</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true"><img src="/static/ams-logo.png" alt="AMS" /></div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span>MS Faculty</div>
+          <div class="brandSub">Attendance Management System</div>
+        </div>
+      </div>
+      <div class="right">
+        <details class="profileMenu">
+          <summary class="profile">
+            <div class="profileText">
+              <div class="profileName">{{ user_name }}</div>
+              <div class="profileRole">{{ user_role|title }}</div>
+            </div>
+            <img class="profileAvatar" src="{{ user_photo }}" alt="Profile photo" />
+            <span class="profileChevron" aria-hidden="true"></span>
+          </summary>
+          <div class="profileDropdown" role="menu">
+            <a href="/change-password?role=faculty&profile={{ profile }}" role="menuitem">Change Password</a>
+            <a href="/logout?role=faculty&profile={{ profile }}" role="menuitem">Logout</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="heroEyebrow">Faculty Workspace</div>
+          <h1 class="heroTitle">Manage your class sections from one focused teaching dashboard.</h1>
+          <p class="heroText">Open a section to move straight into live camera attendance and section-specific records without hunting through the app.</p>
+          <div class="heroActions">
+            {% if sections and sections|length > 0 %}
+              <a class="btn solid" href="/faculty/section?section_id={{ sections[0].id }}&profile={{ profile }}">Open First Section</a>
+            {% endif %}
+            <a class="btn" href="/logout?role=faculty&profile={{ profile }}">Logout</a>
+          </div>
+          <div class="statsGrid">
+            <article class="metricCard">
+              <h3>Assigned Sections</h3>
+              <div class="metricValue">{{ sections|length if sections else 0 }}</div>
+              <div class="metricHint">Sections linked to your faculty account.</div>
+            </article>
+            <article class="metricCard">
+              <h3>Role</h3>
+              <div class="metricValue">Faculty</div>
+              <div class="metricHint">Focused access for section attendance management.</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="heroPanel">
+          <div class="miniPanel">
+            <h3>Quick direction</h3>
+            <p>Each section card now reads like a clear entry point so you can identify the right course faster and start the attendance workflow immediately.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectionBlock">
+      <div class="sectionIntro">
+        <div>
+          <div class="sectionLabel">Assigned Classes</div>
+          <h2>Your sections</h2>
+          <p>Pick a section to access its live camera tools and attendance records.</p>
+        </div>
+      </div>
+
+      <section class="dashboardGrid" aria-label="Sections">
+        {% if sections and sections|length > 0 %}
+          {% for s in sections %}
+            <a class="card featureCard" href="/faculty/section?section_id={{ s.id }}&profile={{ profile }}" rel="noopener noreferrer">
+              <div class="cardIcon">{{ s.course_code[:2]|upper }}</div>
+              <div class="tag">{{ s.course_code }}</div>
+              <h2>{{ s.course_name }}</h2>
+              <p>Section ID {{ s.id }} with {{ s.count }} students. Open tools for attendance, live recognition, and section tracking.</p>
+              <div class="featureFooter">
+                <span>{{ s.count }} students</span>
+                <span>Open Section</span>
+              </div>
+            </a>
+          {% endfor %}
+        {% else %}
+          <div class="card featureCard">
+            <div class="cardIcon">NA</div>
+            <div class="tag">No Sections</div>
+            <h2>No sections assigned</h2>
+            <p>Ask the admin to assign a section to your faculty ID so your live attendance tools can appear here.</p>
+          </div>
+        {% endif %}
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const role = "{{ user_role }}";
+    const profile = "{{ profile }}";
+    if (role === 'faculty' || role === 'trainer') {
+      setInterval(async () => {
+        try {
+          const res = await fetch(`/auth/ping?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`, { cache: 'no-store' });
+          const data = await res.json();
+          if (!data.ok) {
+            window.location.href = `/logout?role=${encodeURIComponent(role)}&profile=${encodeURIComponent(profile)}`;
+          }
+        } catch (_) {
+          // ignore
+        }
+      }, 8000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMS Admin</title>
+  <link rel="icon" href="/static/ams-logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/dashboard.css" />
+  <style>
+    body.adminPage {
+      background:
+        radial-gradient(circle at top left, rgba(30, 64, 175, 0.1), transparent 24%),
+        radial-gradient(circle at top right, rgba(217, 119, 6, 0.08), transparent 28%),
+        linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+    }
+
+    body.adminPage::before {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.42) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.42) 1px, transparent 1px);
+    }
+
+    .adminPage .hero {
+      background: linear-gradient(135deg, #1e293b, #334155 58%, #475569);
+    }
+
+    .adminPage .heroText {
+      color: rgba(241, 245, 249, 0.88);
+    }
+
+    .adminPage .heroPanel .miniPanel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .adminPage .metricCard {
+      color: #0f172a;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 249, 0.95));
+      border: 1px solid rgba(148, 163, 184, 0.38);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    }
+
+    .adminPage .metricCard h3 {
+      color: #64748b;
+      font-size: 0.9rem;
+      letter-spacing: 0.01em;
+    }
+
+    .adminPage .metricValue {
+      color: #0f172a;
+      font-size: 2rem;
+    }
+
+    .adminPage .metricHint {
+      color: #475569;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body class="adminPage">
+  <div class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandLogo" aria-hidden="true"><img src="/static/ams-logo.png" alt="AMS" /></div>
+        <div class="brandText">
+          <div class="brandName"><span class="u">A</span>MS Admin</div>
+          <div class="brandSub">Attendance Management System</div>
+        </div>
+      </div>
+      <div class="right">
+        <a class="btn primary" href="/" target="_blank" rel="noopener noreferrer">Dashboard</a>
+        <a class="btn" href="/logout">Logout</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    {% if msg %}
+      <div class="notice" id="notice">
+        <span>{{ msg }}</span>
+        <button class="noticeClose" type="button" aria-label="Dismiss" onclick="document.getElementById('notice').remove()">×</button>
+      </div>
+    {% endif %}
+
+    <section class="hero">
+      <div class="heroGrid">
+        <div>
+          <div class="heroEyebrow">Operations Center</div>
+          <h1 class="heroTitle">Admin dashboard for students, accounts, sections, and database actions.</h1>
+          <div class="heroActions">
+            <a class="btn solid" href="/attendance" target="_blank" rel="noopener noreferrer">View Attendance</a>
+            <a class="btn warm" href="/train" target="_blank" rel="noopener noreferrer">Open Training</a>
+          </div>
+          <div class="statsGrid">
+            <article class="metricCard">
+              <h3>Total Students</h3>
+              <div class="metricValue" id="studentCountHero">{{ count }}</div>
+              <div class="metricHint">Live count from the student database list below.</div>
+            </article>
+            <article class="metricCard">
+              <h3>User Accounts</h3>
+              <div class="metricValue">{{ accounts|length if accounts else 0 }}</div>
+              <div class="metricHint">Faculty, trainer, and security logins.</div>
+            </article>
+            <article class="metricCard">
+              <h3>Sections</h3>
+              <div class="metricValue">{{ sections|length if sections else 0 }}</div>
+              <div class="metricHint">Courses already linked to faculty and students.</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="heroPanel">
+          <div class="miniPanel">
+            <h3>Admin at a glance</h3>
+            <p>Use the cards below to add students, create accounts, assign sections, and manage database cleanup from a more polished workspace.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sectionBlock">
+      <div class="sectionIntro">
+        <div>
+          <div class="sectionLabel">Management Tools</div>
+          <h2>Core administration</h2>
+          <p>Student onboarding and account creation are now visually separated so the page feels more organized even with many forms and tables.</p>
+        </div>
+      </div>
+
+      <div class="twoCol">
+        <section class="card">
+          <div class="cardHd">
+            <div>
+              <div class="tag">Students</div>
+              <div class="title">Add or update student</div>
+              <div class="sub">Upload images, generate embedding, and upsert by registration number.</div>
+            </div>
+          </div>
+          <div class="content">
+            <form class="stack" method="post" action="/admin/add-student" enctype="multipart/form-data">
+              <div>
+                <label>Regn No (ID)</label>
+                <input type="number" name="person_id" required />
+              </div>
+
+              <div>
+                <label>Roll No</label>
+                <input type="text" name="roll_no" required />
+              </div>
+
+              <div>
+                <label>Name</label>
+                <input type="text" name="name" required />
+              </div>
+
+              <div>
+                <label>Images (multiple)</label>
+                <input type="file" name="files" multiple accept="image/*" required />
+              </div>
+
+              <button class="primary" type="submit">Save Student</button>
+            </form>
+            <div class="hint" style="margin-top:12px;">Using the same registration number updates the student embedding.</div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="cardHd warm">
+            <div>
+              <div class="tag">Accounts</div>
+              <div class="title">Create user accounts</div>
+              <div class="sub">Provision faculty, trainer, and security logins for the role-based dashboards.</div>
+            </div>
+          </div>
+          <div class="content">
+            <form class="stack" method="post" action="/admin/create-account" enctype="multipart/form-data" autocomplete="off">
+              <div>
+                <label>Role</label>
+                <select name="role" required>
+                  <option value="faculty">faculty</option>
+                  <option value="trainer">trainer</option>
+                  <option value="security">security</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Full Name</label>
+                <input type="text" name="full_name" required />
+              </div>
+
+              <div>
+                <label>User ID</label>
+                <input type="text" name="username" required />
+              </div>
+
+              <div>
+                <label>Password</label>
+                <input type="text" name="password" required />
+              </div>
+
+              <div>
+                <label>Profile Photo</label>
+                <input type="file" name="photo" accept="image/*" required />
+              </div>
+
+              <button class="warmAction" type="submit">Create Account</button>
+            </form>
+
+            <div class="spacer20"></div>
+            <div class="sectionLabel" style="background: rgba(36, 89, 246, 0.08); color: var(--blue);">Existing accounts</div>
+
+            {% if accounts and accounts|length > 0 %}
+              <div class="tableWrap" style="margin-top:14px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:120px;">Role</th>
+                      <th>Name</th>
+                      <th>User ID</th>
+                      <th style="width:150px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for a in accounts %}
+                      <tr>
+                        <td>{{ a.role }}</td>
+                        <td class="name">{{ a.full_name or '-' }}</td>
+                        <td>{{ a.username }}</td>
+                        <td>
+                          <form method="post" action="/admin/delete-account" style="margin:0;" onsubmit="return confirm('Delete this account?');">
+                            <input type="hidden" name="account_id" value="{{ a.id }}" />
+                            <button class="danger" type="submit">Delete</button>
+                          </form>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="hint" style="margin-top:12px;">No faculty, trainer, or security accounts yet.</div>
+            {% endif %}
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="sectionBlock">
+      <section class="card">
+        <div class="cardHd warm">
+          <div>
+            <div class="tag">Sections</div>
+            <div class="title">Create and assign sections</div>
+            <div class="sub">Link courses to faculty and assign student groups to each section.</div>
+          </div>
+        </div>
+        <div class="content">
+          <form class="stack" method="post" action="/admin/create-section" autocomplete="off">
+            <div class="row2">
+              <div>
+                <label>Course Code</label>
+                <input type="text" name="course_code" required />
+              </div>
+              <div>
+                <label>Course Name</label>
+                <input type="text" name="course_name" required />
+              </div>
+            </div>
+
+            <div>
+              <label>Faculty Assigned (User ID)</label>
+              <select name="faculty_uid" required>
+                <option value="">Select faculty</option>
+                {% for a in accounts %}
+                  {% if a.role == 'faculty' %}
+                    <option value="{{ a.username }}">{{ a.full_name or a.username }} ({{ a.username }})</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label>Students</label>
+              <div class="studentList">
+                {% if people and people|length > 0 %}
+                  {% for p in people %}
+                    <label class="studentItem">
+                      <input type="checkbox" name="student_ids" value="{{ p.id }}" />
+                      <span>{{ p.roll_no or '-' }} · {{ p.id }} · {{ p.name }}</span>
+                    </label>
+                  {% endfor %}
+                {% else %}
+                  <span class="hint">No students available yet.</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="hint">Assigned students will also be linked to this section immediately.</div>
+            <button class="warmAction" type="submit">Create Section</button>
+          </form>
+
+          {% if sections and sections|length > 0 %}
+            <div class="spacer20"></div>
+            <div class="sectionLabel" style="background: rgba(249, 115, 22, 0.08); color: #c75b12;">Existing sections</div>
+            <div class="tableWrap" style="margin-top:14px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:140px;">Course Code</th>
+                    <th>Course Name</th>
+                    <th style="width:280px;">Faculty</th>
+                    <th style="width:120px;">Students</th>
+                    <th style="width:220px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for s in sections %}
+                    <tr>
+                      <td>{{ s.course_code }}</td>
+                      <td>{{ s.course_name }}</td>
+                      <td>
+                        <div class="name">{{ s.faculty_name or '-' }}</div>
+                        <div class="hint" style="margin-top:4px;">{{ s.faculty_uid }}</div>
+                        <form class="stack" method="post" action="/admin/update-section-faculty" style="margin-top:10px;">
+                          <input type="hidden" name="section_id" value="{{ s.id }}" />
+                          <select name="faculty_uid" required>
+                            <option value="">Reassign faculty</option>
+                            {% for a in accounts %}
+                              {% if a.role == 'faculty' %}
+                                <option value="{{ a.username }}">{{ a.full_name or a.username }} ({{ a.username }})</option>
+                              {% endif %}
+                            {% endfor %}
+                          </select>
+                          <button type="submit">Update</button>
+                        </form>
+                      </td>
+                      <td>{{ s.count }}</td>
+                      <td>
+                        <form method="post" action="/admin/delete-section" style="margin:0;" onsubmit="return confirm('Delete this section?');">
+                          <input type="hidden" name="section_id" value="{{ s.id }}" />
+                          <button class="danger" type="submit">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    </section>
+
+    <section class="sectionBlock">
+      <section class="card">
+        <div class="cardHd">
+          <div>
+            <div class="tag">Database</div>
+            <div class="title">Students database</div>
+            <div class="sub">Total students: <strong id="studentCount">{{ count }}</strong>. Deleting a student also removes their attendance rows.</div>
+          </div>
+        </div>
+        <div class="content">
+          {% if people and people|length > 0 %}
+            <div class="tableWrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width:110px;">Roll No</th>
+                    <th style="width:110px;">Regn No</th>
+                    <th>Name</th>
+                    <th style="width:150px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="studentsTbody">
+                  {% for p in people %}
+                    <tr>
+                      <td>{{ p.roll_no or '-' }}</td>
+                      <td>{{ p.id }}</td>
+                      <td class="name">{{ p.name }}</td>
+                      <td>
+                        <form method="post" action="/admin/delete-student" style="margin:0;" onsubmit="return confirm('Delete this student and their attendance records?');">
+                          <input type="hidden" name="person_id" value="{{ p.id }}" />
+                          <button class="danger" type="submit">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty" id="emptyHint">No students yet. Add one using the form above.</div>
+          {% endif %}
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const tbody = document.getElementById('studentsTbody');
+    const countEl = document.getElementById('studentCount');
+    const heroCountEl = document.getElementById('studentCountHero');
+    const emptyHint = document.getElementById('emptyHint');
+    const scrollKey = 'admin_scroll_y';
+
+    function esc(s) {
+      return String(s ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+
+    function render(people) {
+      const list = Array.isArray(people) ? people : [];
+      if (countEl) countEl.textContent = String(list.length);
+      if (heroCountEl) heroCountEl.textContent = String(list.length);
+
+      if (!tbody) {
+        if (list.length > 0) location.reload();
+        return;
+      }
+
+      tbody.innerHTML = '';
+      for (const p of list) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${esc(p.roll_no || '-')}</td>
+          <td>${esc(p.id)}</td>
+          <td class="name">${esc(p.name)}</td>
+          <td>
+            <form method="post" action="/admin/delete-student" style="margin:0" onsubmit="return confirm('Delete this student and their attendance records?');">
+              <input type="hidden" name="person_id" value="${esc(p.id)}" />
+              <button class="danger" type="submit">Delete</button>
+            </form>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      if (emptyHint) emptyHint.style.display = list.length === 0 ? 'block' : 'none';
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch('/admin/api/students', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        render(data.people);
+      } catch (e) {
+        // ignore offline errors
+      }
+    }
+
+    poll();
+    setInterval(poll, 5000);
+
+    function saveScroll() {
+      sessionStorage.setItem(scrollKey, String(window.scrollY || 0));
+    }
+
+    function restoreScroll() {
+      const value = sessionStorage.getItem(scrollKey);
+      if (value) window.scrollTo(0, Number(value));
+    }
+
+    window.addEventListener('beforeunload', saveScroll);
+    document.addEventListener('submit', saveScroll, true);
+    window.addEventListener('load', restoreScroll);
+  </script>
+</body>
+</html>

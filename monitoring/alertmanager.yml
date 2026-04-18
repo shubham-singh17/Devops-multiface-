@@ -1,0 +1,19 @@
+global:
+  smtp_smarthost: ${ALERT_SMTP_SMARTHOST}
+  smtp_from: ${ALERT_SMTP_FROM}
+  smtp_auth_username: ${ALERT_SMTP_USERNAME}
+  smtp_auth_password: ${ALERT_SMTP_PASSWORD}
+  smtp_require_tls: true
+
+route:
+  receiver: email-notifications
+  group_by: ["alertname"]
+  group_wait: 15s
+  group_interval: 1m
+  repeat_interval: 30m
+
+receivers:
+  - name: email-notifications
+    email_configs:
+      - to: ${ALERT_EMAIL_TO}
+        send_resolved: true
