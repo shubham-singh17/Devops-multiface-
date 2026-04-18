@@ -328,3 +328,12 @@ That means:
 - `${PORT:-8000}` uses Railway's dynamic port in production and `8000` locally
 
 If Railway still shows `Unexposed service`, open your Railway service settings and make sure the web service is using the app container from this repository, then redeploy.
+
+## Vercel + Railway
+
+This repo is a server-rendered FastAPI app, not a separate frontend/backend monorepo.
+
+- Deploy the real app on Railway
+- If you want the public URL on Vercel, use Vercel as a rewrite/proxy in front of Railway
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for the exact setup and `vercel.json.example`.
