@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "https://aiams.up.railway.app/$1"
+    }
+  ]
+}
