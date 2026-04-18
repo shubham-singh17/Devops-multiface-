@@ -4,6 +4,7 @@ insightface
 opencv-python
 numpy
 sqlalchemy
+pymysql
 jinja2
 onnxruntime
 python-multipart

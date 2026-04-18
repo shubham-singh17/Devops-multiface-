@@ -247,6 +247,11 @@ def verify_password(password: str, stored: str) -> bool:
 
 
 def _ensure_sqlite_schema() -> None:
+    if engine.dialect.name != "sqlite":
+        # Non-SQLite databases should use normal table creation only.
+        Base.metadata.create_all(bind=engine)
+        return
+
     # Minimal "migration" for SQLite: add missing columns when the DB already exists.
     # This avoids requiring Alembic for this project.
     Base.metadata.create_all(bind=engine)

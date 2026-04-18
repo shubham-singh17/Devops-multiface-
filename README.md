@@ -262,3 +262,69 @@ PY"
 ```
 
 After about 2 minutes, you should receive an alert email.
+
+## Railway MySQL Setup
+
+This project can run with SQLite locally or MySQL on Railway.
+
+### 1) Create a MySQL database in Railway
+
+In Railway:
+
+1. Create a new project.
+2. Add the `MySQL` service.
+3. Open the MySQL service and copy its connection string.
+
+### 2) Set `DATABASE_URL`
+
+Add this environment variable in Railway for your app service:
+
+```bash
+DATABASE_URL=mysql+pymysql://USER:PASSWORD@HOST:PORT/DATABASE
+```
+
+If Railway gives you a URL starting with `mysql://`, this app now converts it automatically.
+
+### 3) Install dependency
+
+Make sure the app installs:
+
+```bash
+pip install -r requirement.txt
+```
+
+This now includes `pymysql`, which SQLAlchemy uses to connect to Railway MySQL.
+
+### 4) Deploy
+
+On Railway, deploy the app service with the same project code and set all required environment variables such as:
+
+- `DATABASE_URL`
+- `FACEAPP_ADMIN_ID`
+- `FACEAPP_ADMIN_PASSWORD`
+- `FACEAPP_SESSION_SECRET`
+
+### 5) Local development
+
+If `DATABASE_URL` is not set, the app continues using local SQLite:
+
+```bash
+sqlite:///./embeddings.db
+```
+
+## Railway Port Fix
+
+Railway only exposes the app when the running server listens on Railway's assigned `PORT`.
+
+This project now starts Uvicorn with:
+
+```bash
+python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+```
+
+That means:
+
+- `0.0.0.0` allows Railway to reach the app from outside the container
+- `${PORT:-8000}` uses Railway's dynamic port in production and `8000` locally
+
+If Railway still shows `Unexposed service`, open your Railway service settings and make sure the web service is using the app container from this repository, then redeploy.
