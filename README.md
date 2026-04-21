@@ -121,10 +121,10 @@ docker compose --profile monitoring up -d --build
 - Prometheus: `http://localhost:9100`
 - Grafana: `http://localhost:3100`
 
-Grafana login:
+login:
 
-- Username: `admin`
-- Password: `admin123`
+- Username: `1234`
+- Password: `5678`
 
 ### 4) Add Prometheus as Grafana data source
 
